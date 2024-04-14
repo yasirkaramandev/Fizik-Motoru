@@ -2,7 +2,11 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from keyboard import add_hotkey
-
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLabel, QSlider,QDialog
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
+from PyQt5.QtMultimediaWidgets import QVideoWidget
+from PyQt5.QtCore import Qt, QUrl
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -191,6 +195,7 @@ class Ui_MainWindow(object):
         self.maksyukseklik_Label.setText(_translate("MainWindow", "0 M"))
         self.havadaKalma_label.setText(_translate("MainWindow", "0 Sn"))
         self.animasyon_button.setText(_translate("MainWindow", "Animasyonu Oynat"))
+        self.animasyon_button.clicked.connect(self.animation)
     def close(self):
         MainWindow.close()
     def set_line_edit_validator(self, line_edit):
@@ -244,12 +249,79 @@ class Ui_MainWindow(object):
                 self.maksyukseklik_Label.setText(_translate("MainWindow", f"{h_data} M"))
                 self.havadaKalma_label.setText(_translate("MainWindow", f"{flag} S"))
         else:("Err")
+    def animation(self):
+                
+                v_p = int(self.arachiz_lineEdit.text())
+                a_p = int(self.aracivme_lineEdit.text())
+                v_c = int(self.elmaatishiz_lineEdit.text())
+                g = int(self.yercekim_linEdit.text())
+                veri = self.platform_cisim_hesapla(v_p,a_p,v_c,g)  # 1 , 3 index
+                arac_x = veri[-1][1]
+                cisim_x = veri[-1][3]
+                sonuc = arac_x - cisim_x
+                if sonuc == 0:
+                     self.showMoreInfoDialog("Assets/dogrusaldusus.mp4","Elma Doğrusal Düşüyor")
+                elif sonuc >= 0:
+                     self.showMoreInfoDialog("Assets/geridusus.mp4","Elma Aracın Arkasına Düşüyor")
+                else: self.showMoreInfoDialog("Assets/ileridusus.mp4","Elma Aracın Önüne Düşüyor")
+    def showMoreInfoDialog(self,video_path,title ):
+        Dialog = QtWidgets.QDialog(MainWindow)
+        
+        Dialog.setObjectName("Dialog")
+        Dialog.resize(540, 720)
+        Dialog.setStyleSheet("background-image:url("");")
+        Dialog.setWindowTitle(title)
+        self.mediaPlayer = QMediaPlayer(Dialog, QMediaPlayer.VideoSurface)
+        videoWidget = QVideoWidget()
+
+        layout = QVBoxLayout()
+        layout.addWidget(videoWidget)
+
+        self.playButton = QPushButton("Play")
+        self.playButton.clicked.connect(self.playClicked)
+        layout.addWidget(self.playButton)
+
+        self.positionSlider = QSlider(Qt.Horizontal)
+        layout.addWidget(self.positionSlider)
+        self.positionSlider.sliderMoved.connect(self.setPosition)
+
+        Dialog.setLayout(layout)
+
+        self.mediaPlayer.setVideoOutput(videoWidget)
+        self.mediaPlayer.stateChanged.connect(self.mediaStateChanged)
+        self.mediaPlayer.positionChanged.connect(self.positionChanged)
+        self.mediaPlayer.durationChanged.connect(self.durationChanged)
+
+        self.video_path = video_path
+        self.mediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(self.video_path)))
+        Dialog.exec_()
+        self.retranslateUi(Dialog)
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
+    def playClicked(self):
+        if self.mediaPlayer.state() == QMediaPlayer.PlayingState:
+            self.mediaPlayer.pause()
+        else:
+            self.mediaPlayer.play()
+
+    def mediaStateChanged(self, state):
+        if self.mediaPlayer.state() == QMediaPlayer.PlayingState:
+            self.playButton.setText("Pause")
+        else:
+            self.playButton.setText("Play")
+
+    def positionChanged(self, position):
+        self.positionSlider.setValue(position)
+
+    def durationChanged(self, duration):
+        self.positionSlider.setRange(0, duration)
+
+    def setPosition(self, position):
+        self.mediaPlayer.setPosition(position)
 if __name__ == "__main__":
-    import sys
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
-    MainWindow.show()
     add_hotkey('esc',ui.close)
+    MainWindow.show()
     sys.exit(app.exec_())
