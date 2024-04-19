@@ -193,8 +193,6 @@ class Ui_MainWindow(object):
         self.elmaatishiz_lineEdit.setPlaceholderText(_translate("MainWindow", "m/s ..."))
         self.arachiz_lineEdit.setPlaceholderText(_translate("MainWindow", "m/s ..."))
         self.simule_button.setText(_translate("MainWindow", "Simüle Et!"))
-        self.maksyukseklik_Label.setText(_translate("MainWindow", "0 M"))
-        self.havadaKalma_label.setText(_translate("MainWindow", "0 Sn"))
         self.animasyon_button.setText(_translate("MainWindow", "Animasyonu Oynat"))
         self.animasyon_button.clicked.connect(self.animation)
     def close(self):
@@ -249,7 +247,8 @@ class Ui_MainWindow(object):
         
                 self.maksyukseklik_Label.setText(_translate("MainWindow", f"{h_data} M"))
                 self.havadaKalma_label.setText(_translate("MainWindow", f"{flag} S"))
-        else:("Err")
+        else: pass
+    
     def animation(self):
         try:
             try:
@@ -260,14 +259,14 @@ class Ui_MainWindow(object):
                 veri = self.platform_cisim_hesapla(v_p,a_p,v_c,g)  # 1 , 3 index
             except ValueError:
                 QtWidgets.QMessageBox.warning(None,"Uyarı","Tüm alanları doldurunuz.")
-                arac_x = veri[-1][1]
-                cisim_x = veri[-1][3]
-                sonuc = arac_x - cisim_x
-                if sonuc == 0:
-                     self.showMoreInfoDialog("Assets/dogrusaldusus.mp4","Elma Doğrusal Düşüyor")
-                elif sonuc >= 0:
-                     self.showMoreInfoDialog("Assets/geridusus.mp4","Elma Aracın Arkasına Düşüyor")
-                else: self.showMoreInfoDialog("Assets/ileridusus.mp4","Elma Aracın Önüne Düşüyor")
+            arac_x = veri[-1][1]
+            cisim_x = veri[-1][3]
+            sonuc = arac_x - cisim_x
+            if sonuc == 0:
+                 self.showMoreInfoDialog("Assets/dogrusaldusus.mp4","Elma Doğrusal Düşüyor")
+            elif sonuc >= 0:
+                 self.showMoreInfoDialog("Assets/geridusus.mp4","Elma Aracın Arkasına Düşüyor")
+            else: self.showMoreInfoDialog("Assets/ileridusus.mp4","Elma Aracın Önüne Düşüyor")
         except Exception as e:
             print("Err:", e)
     def showMoreInfoDialog(self,video_path,title ):
