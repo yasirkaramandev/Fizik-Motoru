@@ -7,6 +7,7 @@ from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QVBoxLayout, QLa
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtMultimediaWidgets import QVideoWidget
 from PyQt5.QtCore import Qt, QUrl
+
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -250,12 +251,15 @@ class Ui_MainWindow(object):
                 self.havadaKalma_label.setText(_translate("MainWindow", f"{flag} S"))
         else:("Err")
     def animation(self):
-                
+        try:
+            try:
                 v_p = int(self.arachiz_lineEdit.text())
                 a_p = int(self.aracivme_lineEdit.text())
                 v_c = int(self.elmaatishiz_lineEdit.text())
                 g = int(self.yercekim_linEdit.text())
                 veri = self.platform_cisim_hesapla(v_p,a_p,v_c,g)  # 1 , 3 index
+            except ValueError:
+                QtWidgets.QMessageBox.warning(None,"Uyarı","Tüm alanları doldurunuz.")
                 arac_x = veri[-1][1]
                 cisim_x = veri[-1][3]
                 sonuc = arac_x - cisim_x
@@ -264,6 +268,8 @@ class Ui_MainWindow(object):
                 elif sonuc >= 0:
                      self.showMoreInfoDialog("Assets/geridusus.mp4","Elma Aracın Arkasına Düşüyor")
                 else: self.showMoreInfoDialog("Assets/ileridusus.mp4","Elma Aracın Önüne Düşüyor")
+        except Exception as e:
+            print("Err:", e)
     def showMoreInfoDialog(self,video_path,title ):
         Dialog = QtWidgets.QDialog(MainWindow)
         
