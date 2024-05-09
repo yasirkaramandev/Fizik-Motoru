@@ -49,7 +49,7 @@ class Ui_MainWindow(object):
 "padding:3px;\n"
 "}")
         self.aracivme_lineEdit.setObjectName("aracivme_lineEdit")
-        validator = QtGui.QIntValidator(MainWindow)
+        validator = QtGui.QDoubleValidator(MainWindow)
         self.aracivme_lineEdit.setValidator(validator)
         self.yercekim_linEdit = QtWidgets.QLineEdit(self.centralwidget)
         self.yercekim_linEdit.setGeometry(QtCore.QRect(580, 576, 113, 51))
@@ -223,39 +223,52 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         self.treeWidget.clear()
         if self.aracivme_lineEdit.text() != "" and self.yercekim_linEdit.text() != "" and self.elmaatishiz_lineEdit.text() != "" and self.arachiz_lineEdit.text() != "":
-                v_p = int(self.arachiz_lineEdit.text())
-                a_p = int(self.aracivme_lineEdit.text())
-                v_c = int(self.elmaatishiz_lineEdit.text())
-                g = int(self.yercekim_linEdit.text())
+                _vp = self.arachiz_lineEdit.text().replace(",",".")
+                _ap = self.aracivme_lineEdit.text().replace(",",".")
+                _vc = self.elmaatishiz_lineEdit.text().replace(",",".")
+                _g = self.yercekim_linEdit.text().replace(",",".")
+                v_p = float(_vp)
+                a_p = float(_ap)
+                v_c = float(_vc)
+                g = float(_g)
                 veri = self.platform_cisim_hesapla(v_p,a_p,v_c,g)
-                for i in range(len(veri)):
-                    item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
-                flag = 0
-                h_data = []
-                for i in veri:
-                    t = i[0]
-                    x = i[3]
-                    h = i[2]
-                    h_data.append(h)
-                    arac_x = i[1]
-                    self.treeWidget.topLevelItem(flag).setText(0, _translate("MainWindow", f"{t}"))
-                    self.treeWidget.topLevelItem(flag).setText(1, _translate("MainWindow", f"{x}"))
-                    self.treeWidget.topLevelItem(flag).setText(2, _translate("MainWindow", f"{h}"))
-                    self.treeWidget.topLevelItem(flag).setText(3, _translate("MainWindow", f"{arac_x}"))
-                    flag += 1   
-                h_data = int(sorted(h_data,reverse=True)[0])
-        
-                self.maksyukseklik_Label.setText(_translate("MainWindow", f"{h_data} M"))
-                self.havadaKalma_label.setText(_translate("MainWindow", f"{flag} S"))
-        else: pass
-    
+                if veri == None:
+                    veri = []
+                if len(veri) != 0:
+
+                    for i in range(len(veri)):
+                        item_0 = QtWidgets.QTreeWidgetItem(self.treeWidget)
+                    flag = 0
+                    h_data = []
+                    for i in veri:
+                        t = round(i[0],2)
+                        x = round(i[3],2)
+                        h = round(i[2],2)
+                        h_data.append(h)
+                        arac_x = round(i[1],2)
+                        self.treeWidget.topLevelItem(flag).setText(0, _translate("MainWindow", f"{t}"))
+                        self.treeWidget.topLevelItem(flag).setText(1, _translate("MainWindow", f"{x}"))
+                        self.treeWidget.topLevelItem(flag).setText(2, _translate("MainWindow", f"{h}"))
+                        self.treeWidget.topLevelItem(flag).setText(3, _translate("MainWindow", f"{arac_x}"))
+                        flag += 1   
+                    h_data = int(sorted(h_data,reverse=True)[0])
+
+                    self.maksyukseklik_Label.setText(_translate("MainWindow", f"{h_data} M"))
+                    self.havadaKalma_label.setText(_translate("MainWindow", f"{flag} S"))
+                else: QtWidgets.QMessageBox.warning(None,"Uyarı","Lütfen boşlukların hepsine 0 koymayınız.")
+        else: QtWidgets.QMessageBox.warning(None,"Uyarı","Tüm alanları doldurunuz.")
+
     def animation(self):
         try:
             try:
-                v_p = int(self.arachiz_lineEdit.text())
-                a_p = int(self.aracivme_lineEdit.text())
-                v_c = int(self.elmaatishiz_lineEdit.text())
-                g = int(self.yercekim_linEdit.text())
+                _vp = self.arachiz_lineEdit.text().replace(",",".")
+                _ap = self.aracivme_lineEdit.text().replace(",",".")
+                _vc = self.elmaatishiz_lineEdit.text().replace(",",".")
+                _g = self.yercekim_linEdit.text().replace(",",".")
+                v_p = float(_vp)
+                a_p = float(_ap)
+                v_c = float(_vc)
+                g = float(_g)
                 veri = self.platform_cisim_hesapla(v_p,a_p,v_c,g)  # 1 , 3 index
             except ValueError:
                 QtWidgets.QMessageBox.warning(None,"Uyarı","Tüm alanları doldurunuz.")
